@@ -14,7 +14,7 @@ This crate can perform the following:
 Cargo.toml:
 ```toml
 [target.'cfg(windows)'.dependencies]
-winfw = { git = "https://github.com/marirs/winfw-rs", branch = "main" }
+winfw = { git = "https://github.com/marirs/winfw-rs", branch = "master" }
 ```
 
 main.rs:
