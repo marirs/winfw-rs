@@ -1,0 +1,36 @@
+[package]
+name = "winfw"
+version = "0.1.0"
+description = "Bindings for Windows Firewall"
+authors = ["Marirs <marirs@gmail.com>"]
+license = "MIT/Apache-2.0"
+readme = "README.md"
+build = "build.rs"
+repository = "https://github.com/marirs/winfw-rs"
+keywords = ["windows", "ffi", "win32", "com", "firewall"]
+categories = ["external-ffi-bindings", "os::windows-apis"]
+edition = "2018"
+
+[package.metadata.docs.rs]
+default-target = "x86_64-pc-windows-msvc"
+targets = ["aarch64-pc-windows-msvc", "i686-pc-windows-msvc", "x86_64-pc-windows-msvc"]
+
+[dependencies]
+libc = "0.2"
+
+[build-dependencies]
+cc = { version = "1.0", features = ["parallel"] }
+
+[lib]
+name = "winfw"
+path = "src/lib.rs"
+
+[profile.dev]
+opt-level = 3
+
+[profile.release]
+codegen-units = 1
+debug-assertions = false
+debug = false
+opt-level = 3
+lto = true
