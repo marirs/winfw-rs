@@ -192,7 +192,6 @@ HRESULT newFWRule(fw_rule* rule){
     hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED);
     if (hrComInit != RPC_E_CHANGED_MODE){
         if (FAILED(hrComInit)){
-//            printf("CoInitializeEx failed: 0x%08lx\n", hrComInit);
             goto Cleanup;
         }
     }
@@ -202,12 +201,10 @@ HRESULT newFWRule(fw_rule* rule){
     }
     hr = pNetFwPolicy2->get_Rules(&pFwRules);
     if (FAILED(hr)){
-//        printf("get_Rules failed: 0x%08lx\n", hr);
         goto Cleanup;
     }
     hr = pNetFwPolicy2->get_CurrentProfileTypes(&CurrentProfilesBitMask);
     if (FAILED(hr)){
-//        printf("get_CurrentProfileTypes failed: 0x%08lx\n", hr);
         goto Cleanup;
     }
     if ((CurrentProfilesBitMask & NET_FW_PROFILE2_PUBLIC) && (CurrentProfilesBitMask != NET_FW_PROFILE2_PUBLIC)){
@@ -215,7 +212,6 @@ HRESULT newFWRule(fw_rule* rule){
     }
     hr = CoCreateInstance(__uuidof(NetFwRule), NULL, CLSCTX_INPROC_SERVER, __uuidof(INetFwRule), (void**)&pFwRule);
     if (FAILED(hr)){
-//        printf("CoCreateInstance for Firewall Rule failed: 0x%08lx\n", hr);
         goto Cleanup;
     }
     pFwRule->put_Name(bstrRuleName);
@@ -230,7 +226,6 @@ HRESULT newFWRule(fw_rule* rule){
     pFwRule->put_RemoteAddresses(bstrRuleRemoteAdresses);
     pFwRule->put_Direction(NET_FW_RULE_DIRECTION(rule->direction));
     pFwRule->put_Action(NET_FW_ACTION(rule->action));
-//    pFwRule->put_Interfaces(bstrRuleInterfaces);
     pFwRule->put_InterfaceTypes(bstrRuleInterfaceTypes);
     pFwRule->put_Enabled(rule->enabled);
     pFwRule->put_Grouping(bstrRuleGrouping);
@@ -239,7 +234,6 @@ HRESULT newFWRule(fw_rule* rule){
 
     hr = pFwRules->Add(pFwRule);
     if (FAILED(hr)){
-//        printf("Firewall Rule Add failed: 0x%08lx\n", hr);
         goto Cleanup;
     }
 Cleanup:
@@ -280,7 +274,6 @@ HRESULT remFWRule(char* rule_name){
     INetFwRule *pFwRule = NULL;
 
     long CurrentProfilesBitMask = 0;
-//    printf("rule name: %s\n", rule_name);
 
     BSTR bstrRuleName;
     char_to_bstr(rule_name, &bstrRuleName);
