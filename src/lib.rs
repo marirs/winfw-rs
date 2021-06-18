@@ -173,7 +173,7 @@ impl Display for FwRule {
 extern "C" {
     fn getFWRules(rules: &*mut fw_rule_impl, size: *mut c_long) -> c_ulong;
     fn newFWRule(rule: &fw_rule_impl) -> c_ulong;
-    fn remFWRule(rule: *const c_char) -> c_ulong;
+    fn delFWRule(rule: *const c_char) -> c_ulong;
 }
 
 #[no_mangle]
@@ -202,7 +202,7 @@ pub fn new_fw_rule(rule: &FwRule) -> Result<(), Error> {
 pub fn del_fw_rule(name: &str) -> Result<(), Error> {
     let mut s: [c_char; 1024] = [0; 1024];
     encode(name, &mut s);
-    let res = unsafe { remFWRule(s.as_ptr()) };
+    let res = unsafe { delFWRule(s.as_ptr()) };
     if res != 0 {
         return Err(Error(res));
     }
