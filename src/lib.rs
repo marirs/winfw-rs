@@ -4,7 +4,7 @@
 // All files in the project carrying such notice may not be copied, modified, or distributed
 // except according to those terms.
 use libc::{c_char, c_long, c_ulong};
-use std::fmt::{self, Debug, Display, Formatter};
+use std::fmt::{self, Display, Formatter};
 use std::vec::Vec;
 
 mod utils;
@@ -13,111 +13,11 @@ use self::utils::{decode_vecs, encode};
 mod cfw;
 use cfw::fw_rule_impl;
 
-#[derive(Debug)]
-#[repr(transparent)]
-pub struct Error(libc::c_ulong);
+mod consts;
+pub use self::consts::{Actions, Directions, Protocols};
 
-impl Display for Error {
-    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        write!(f, "{:#08x}", self.0)
-    }
-}
-
-#[derive(Clone)]
-pub enum Protocols {
-    Tcp,
-    Udp,
-    Any,
-}
-
-impl From<c_long> for Protocols {
-    fn from(w: c_long) -> Protocols {
-        match w {
-            0x00000006 => Protocols::Tcp,
-            0x00000011 => Protocols::Udp,
-            _ => Protocols::Any,
-        }
-    }
-}
-
-impl Default for Protocols {
-    fn default() -> Self {
-        Protocols::Any
-    }
-}
-
-impl Display for Protocols {
-    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        match self {
-            Protocols::Tcp => write!(f, "TCP"),
-            Protocols::Udp => write!(f, "UDP"),
-            Protocols::Any => write!(f, "Any"),
-        }
-    }
-}
-
-#[derive(Clone)]
-pub enum Directions {
-    In,
-    Out,
-    Any,
-}
-
-impl From<c_long> for Directions {
-    fn from(w: c_long) -> Directions {
-        match w {
-            1 => Directions::In,
-            2 => Directions::Out,
-            _ => Directions::Any,
-        }
-    }
-}
-
-impl Default for Directions {
-    fn default() -> Self {
-        Directions::Any
-    }
-}
-
-impl Display for Directions {
-    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        match self {
-            Directions::In => write!(f, "IN"),
-            Directions::Out => write!(f, "OUT"),
-            Directions::Any => write!(f, "Any"),
-        }
-    }
-}
-
-#[derive(Clone)]
-pub enum Actions {
-    Block,
-    Allow,
-}
-
-impl From<c_long> for Actions {
-    fn from(w: c_long) -> Actions {
-        match w {
-            0 => Actions::Block,
-            _ => Actions::Allow,
-        }
-    }
-}
-
-impl Default for Actions {
-    fn default() -> Self {
-        Actions::Block
-    }
-}
-
-impl Display for Actions {
-    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        match self {
-            Actions::Block => write!(f, "BLOCK"),
-            Actions::Allow => write!(f, "ALLOW"),
-        }
-    }
-}
+mod error;
+pub use self::error::Error;
 
 #[derive(Default, Clone)]
 #[repr(C)]
@@ -146,7 +46,7 @@ pub struct FwRule {
 
 impl Display for FwRule {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        write!(f, "name: {}\ndescription: {}\napplication name: {}\nservice name: {}\nprotocol: {}\nicmp type: {}\nlocal ports: {}\nremote ports: {}\nlocal address: {}\nremote address: {}\nprofiles: {} {} {}\ndirection: {}\naction: {}\ninterfaces types: {}\ninterfaces: {}\nenabled: {}\ngrouping: {}\nedge traversal: {}", 
+        write!(f, "name: {}\ndescription: {}\napplication name: {}\nservice name: {}\nprotocol: {}\nicmp type: {}\nlocal ports: {}\nremote ports: {}\nlocal address: {}\nremote address: {}\nprofiles: {} {} {}\ndirection: {}\naction: {}\ninterfaces types: {}\ninterfaces: {}\nenabled: {}\ngrouping: {}\nedge traversal: {}\n---",
         self.name,
         self.description,
         self.app_name,
@@ -223,6 +123,22 @@ pub fn disable_fw_rule(name: &str) -> Result<(), Error> {
                 }
             }
             Err(Error(32))
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_get_fw_rules() {
+        let rules = get_fw_rules();
+        match rules {
+            Err(_) => assert!(false),
+            Ok(_) => {
+                assert!(true)
+            }
         }
     }
 }
