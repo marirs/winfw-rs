@@ -265,7 +265,7 @@ Cleanup:
 }
 
 extern "C"
-HRESULT remFWRule(char* rule_name){
+HRESULT delFWRule(char* rule_name){
     HRESULT hrComInit = S_OK;
     HRESULT hr = S_OK;
 
