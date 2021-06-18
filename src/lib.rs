@@ -14,7 +14,7 @@ pub struct Error(libc::c_ulong);
 
 impl Display for Error {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        write!(f, "{}", self.0)
+        write!(f, "{:#08x}", self.0)
     }
 }
 
@@ -321,7 +321,7 @@ extern "C" {
 }
 
 #[no_mangle]
-pub extern "C" fn get_fw_rules() -> Result<Vec<FwRule>, Error> {
+pub fn get_fw_rules() -> Result<Vec<FwRule>, Error> {
     let mut required_size = 0;
     let rules: *mut fw_rule_impl = std::ptr::null_mut();
     let res = unsafe { getFWRules(&rules, &mut required_size) };
@@ -333,7 +333,7 @@ pub extern "C" fn get_fw_rules() -> Result<Vec<FwRule>, Error> {
 }
 
 #[no_mangle]
-pub extern "C" fn new_fw_rule(rule: &FwRule) -> Result<(), Error> {
+pub fn new_fw_rule(rule: &FwRule) -> Result<(), Error> {
     let fw_rule: fw_rule_impl = rule.into();
     let res = unsafe { newFWRule(&fw_rule) };
     if res != 0 {
@@ -343,7 +343,7 @@ pub extern "C" fn new_fw_rule(rule: &FwRule) -> Result<(), Error> {
 }
 
 #[no_mangle]
-pub extern "C" fn del_fw_rule(name: &str) -> Result<(), Error> {
+pub fn del_fw_rule(name: &str) -> Result<(), Error> {
     let mut s: [c_char; 1024] = [0; 1024];
     encode(name, &mut s);
     let res = unsafe { remFWRule(s.as_ptr()) };
@@ -354,7 +354,7 @@ pub extern "C" fn del_fw_rule(name: &str) -> Result<(), Error> {
 }
 
 #[no_mangle]
-pub extern "C" fn disable_fw_rule(name: &str) -> Result<(), Error> {
+pub fn disable_fw_rule(name: &str) -> Result<(), Error> {
     let rules = get_fw_rules();
     match rules {
         Err(rules) => Err(rules),
