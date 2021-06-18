@@ -9,6 +9,7 @@ fn main() {
             for rule in rules.iter() {
                 println!("{}", rule);
             }
+            println!("Total rules: {}", rules.len());
         }
     }
 }
