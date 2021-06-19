@@ -1,6 +1,11 @@
 Windows Firewall
 ==================
 
+![Crates.io](https://img.shields.io/crates/v/winfw)
+[![Documentation](https://docs.rs/winfw/badge.svg)](https://docs.rs/winfw)
+![Crates.io](https://img.shields.io/crates/l/winfw)
+
+
 Interact with the Windows Firewall from Rust. Bindings for Windows Firewall, with clean & simple API for use with Rust.  
   
 This crate can perform the following:
