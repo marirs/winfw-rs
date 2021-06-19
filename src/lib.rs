@@ -78,6 +78,20 @@ extern "C" {
 
 #[no_mangle]
 pub fn get_fw_rules() -> Result<Vec<FwRule>, Error> {
+    //! Gets all the firewal rules configured.
+    //!
+    //! ## Example usage
+    //! ```rust
+    //! use winfw::get_fw_rules;
+    //!
+    //! let rules = get_fw_rules();
+    //! match rules {
+    //!     Err(_) => assert!(false),
+    //!     Ok(_) => {
+    //!         assert!(true)
+    //!    }
+    //! }
+    //! ```
     let mut required_size = 0;
     let rules: *mut fw_rule_impl = std::ptr::null_mut();
     let res = unsafe { getFWRules(&rules, &mut required_size) };
@@ -90,6 +104,27 @@ pub fn get_fw_rules() -> Result<Vec<FwRule>, Error> {
 
 #[no_mangle]
 pub fn new_fw_rule(rule: &FwRule) -> Result<(), Error> {
+    //! Add and configure a new firewall rule.
+    //!
+    //! ## Example usage
+    //! ```ignore
+    //! use winfw::{new_fw_rule, Actions, FwRule, Protocols};
+    //!
+    //! let mut new_rule = FwRule::default();
+    //! new_rule.name = "TEST_INTERFACE_RULE".to_string();
+    //! new_rule.description = "Allow incoming network traffic over port 2400 coming from LAN interface type".to_string();
+    //! new_rule.grouping = "Test Rule Group".to_string();
+    //! new_rule.grouping = "Test Rule Group".to_string();
+    //! new_rule.local_ports = "2400-2450".to_string();
+    //! new_rule.interface_types = "LAN".to_string();
+    //! new_rule.protocol = Protocols::Tcp;
+    //! new_rule.action = Actions::Allow;
+    //! new_rule.enabled = true;
+    //! match new_fw_rule(&new_rule) {
+    //!     Err(_) => assert!(false),
+    //!     Ok(()) => assert!(true),
+    //! }
+    //! ```
     let fw_rule: fw_rule_impl = rule.into();
     let res = unsafe { newFWRule(&fw_rule) };
     if res != 0 {
@@ -100,6 +135,17 @@ pub fn new_fw_rule(rule: &FwRule) -> Result<(), Error> {
 
 #[no_mangle]
 pub fn del_fw_rule(name: &str) -> Result<(), Error> {
+    //! Deletes an existing firewall rule.
+    //!
+    //! ## Example usage
+    //! ```ignore
+    //! use winfw::del_fw_rule;
+    //!
+    //! match del_fw_rule(&"TEST_INTERFACE_RULE".to_string()) {
+    //!     Err(_) => assert!(false),
+    //!     Ok(()) => assert!(true),
+    //! }
+    //! ```
     let mut s: [c_char; 1024] = [0; 1024];
     encode(name, &mut s);
     let res = unsafe { delFWRule(s.as_ptr()) };
@@ -111,6 +157,17 @@ pub fn del_fw_rule(name: &str) -> Result<(), Error> {
 
 #[no_mangle]
 pub fn disable_fw_rule(name: &str) -> Result<(), Error> {
+    //! Disables an existing firewall rule.
+    //!
+    //! ## Example usage
+    //! ```ignore
+    //! use winfw::disable_fw_rule;
+    //!
+    //! match disable_fw_rule(&"TEST_INTERFACE_RULE".to_string()) {
+    //!     Err(_) => assert!(false),
+    //!     Ok(()) =>  assert!(true),
+    //! }
+    //! ```
     let rules = get_fw_rules();
     match rules {
         Err(rules) => Err(rules),
