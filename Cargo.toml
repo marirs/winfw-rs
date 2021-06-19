@@ -1,7 +1,7 @@
 [package]
 name = "winfw"
-version = "0.1.0"
-description = "Bindings for Windows Firewall"
+version = "0.1.1"
+description = "Interact with the Windows Firewall from Rust"
 authors = ["Marirs <marirs@gmail.com>"]
 license = "MIT/Apache-2.0"
 readme = "README.md"

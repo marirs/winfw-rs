@@ -1,7 +1,7 @@
 Windows Firewall
 ==================
 
-Bindings for Windows Firewall, with clean & simple API for use with Rust.  
+Interact with the Windows Firewall from Rust. Bindings for Windows Firewall, with clean & simple API for use with Rust.  
   
 This crate can perform the following:
 - Enumerate the Windows firewall rules
@@ -14,7 +14,7 @@ This crate can perform the following:
 Cargo.toml:
 ```toml
 [target.'cfg(windows)'.dependencies]
-winfw = { git = "https://github.com/marirs/winfw-rs", branch = "master" }
+winfw = "0.1.1"
 ```
 
 main.rs:
