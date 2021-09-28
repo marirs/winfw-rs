@@ -5,8 +5,9 @@
 // except according to those terms.
 use libc::c_long;
 use std::fmt::{self, Display, Formatter};
+use serde::Serialize;
 
-#[derive(Clone)]
+#[derive(Clone, Serialize)]
 pub enum Protocols {
     Tcp,
     Udp,
@@ -39,7 +40,7 @@ impl Display for Protocols {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Serialize)]
 pub enum Directions {
     In,
     Out,
@@ -72,7 +73,7 @@ impl Display for Directions {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, Serialize)]
 pub enum Actions {
     Block,
     Allow,

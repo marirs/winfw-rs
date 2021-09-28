@@ -5,6 +5,10 @@
 // except according to those terms.
 extern crate cc;
 
+#[cfg(not(windows))]
+fn main() {}
+
+#[cfg(windows)]
 fn main() {
     cc::Build::new()
         .cpp(true)

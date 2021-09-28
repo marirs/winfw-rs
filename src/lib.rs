@@ -4,8 +4,8 @@
 // All files in the project carrying such notice may not be copied, modified, or distributed
 // except according to those terms.
 use libc::{c_char, c_long, c_ulong};
-use std::fmt::{self, Display, Formatter};
-use std::vec::Vec;
+use std::{fmt::{self, Display, Formatter}, vec::Vec};
+use serde::Serialize;
 
 mod utils;
 use self::utils::{decode_vecs, encode};
@@ -19,7 +19,7 @@ pub use self::consts::{Actions, Directions, Protocols};
 mod error;
 pub use self::error::Error;
 
-#[derive(Default, Clone)]
+#[derive(Default, Clone, Serialize)]
 #[repr(C)]
 pub struct FwRule {
     pub name: String,

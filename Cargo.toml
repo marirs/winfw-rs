@@ -1,6 +1,6 @@
 [package]
 name = "winfw"
-version = "0.1.1"
+version = "0.1.2"
 description = "Interact with the Windows Firewall from Rust"
 authors = ["Marirs <marirs@gmail.com>"]
 license = "MIT/Apache-2.0"
@@ -17,6 +17,7 @@ targets = ["aarch64-pc-windows-msvc", "i686-pc-windows-msvc", "x86_64-pc-windows
 
 [dependencies]
 libc = "0.2"
+serde = { version = "1.0.127", features = ["derive"] }
 
 [build-dependencies]
 cc = { version = "1.0", features = ["parallel"] }
