@@ -71,7 +71,7 @@ impl Display for FwRule {
 }
 
 extern "C" {
-    fn getFWRules(rules: &*mut fw_rule_impl, size: *mut c_long) -> c_ulong;
+    fn getFWRules(rules: &*mut fw_rule_impl, size: *mut c_long, rules_count: *mut c_long) -> c_ulong;
     fn newFWRule(rule: &fw_rule_impl) -> c_ulong;
     fn delFWRule(rule: *const c_char) -> c_ulong;
 }
@@ -80,7 +80,7 @@ extern "C" {
 pub fn get_fw_rules() -> Result<Vec<FwRule>, Error> {
     //! Gets all the firewal rules configured.
     //!
-    //! ## Example usage
+    //! ## Example usage 
     //! ```rust
     //! use winfw::get_fw_rules;
     //!
@@ -93,13 +93,22 @@ pub fn get_fw_rules() -> Result<Vec<FwRule>, Error> {
     //! }
     //! ```
     let mut required_size = 0;
-    let rules: *mut fw_rule_impl = std::ptr::null_mut();
-    let res = unsafe { getFWRules(&rules, &mut required_size) };
-    if res != 0 {
-        return Err(Error(res));
+    let mut rules_count = 0;
+    let mut rules: *mut fw_rule_impl = std::ptr::null_mut();
+    let mut res = unsafe { getFWRules(&rules, &mut required_size, &mut rules_count) };
+    assert_eq!(res, 8);
+    rules = unsafe { libc::malloc(required_size as usize) } as *mut fw_rule_impl;
+    if rules == std::ptr::null_mut(){
+        return Err(Error(1));
     }
-    let fw_rules_slice = unsafe { std::slice::from_raw_parts_mut(rules, required_size as usize) };
-    Ok(decode_vecs(fw_rules_slice.to_vec()))
+    res = unsafe { getFWRules(&rules, &mut required_size, &mut rules_count) };
+    if res != 0 {
+        return Err(Error(1));
+    }
+    let fw_rules_slice = unsafe { std::slice::from_raw_parts_mut(rules, rules_count as usize) };
+    let res = decode_vecs(fw_rules_slice.to_vec());
+    unsafe { libc::free(rules as *mut libc::c_void) };
+    Ok(res)
 }
 
 #[no_mangle]

@@ -7,7 +7,7 @@ fn main() {
         Err(rules) => println!("Error: {}", rules),
         Ok(rules) => {
             for rule in rules.iter() {
-                println!("{}", rule);
+                println!("{}", rule); 
             }
             println!("Total rules: {}", rules.len());
         }
