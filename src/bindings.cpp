@@ -131,11 +131,14 @@ HRESULT getFWRules(fw_rule** rules, long* size, long* rules_count){
                 pFwRule = NULL;
             }
         }
-        var.Clear();
     }
+    var.Clear();
 Cleanup:
     if (pFwRule != NULL){
         pFwRule->Release();
+    }
+    if (pFwRules != NULL){
+        pFwRules->Release();
     }
     if (pNetFwPolicy2 != NULL){
         pNetFwPolicy2->Release();
@@ -416,19 +419,16 @@ fw_rule DumpFWRulesInCollection(INetFwRule* FwRule){
             sprintf(res.interfaces, "");   
             for(long index= pSa->rgsabound->lLbound; index < (long)pSa->rgsabound->cElements; index++){
                 SafeArrayGetElement(pSa, &index, &InterfaceString);
-                sprintf(res.interfaces, "%s, %s", res.interfaces, (BSTR)InterfaceString.bstrVal);
-                InterfaceString.Clear();   
+                sprintf(res.interfaces, "%s, %s", res.interfaces, (BSTR)InterfaceString.bstrVal);   
             }
         }
     }
-    InterfaceArray.Clear();
     if (SUCCEEDED(FwRule->get_InterfaceTypes(&bstrVal))){
         utf8_encode(bstrVal, res.interface_types);
         SysFreeString(bstrVal);
     }
     if (SUCCEEDED(FwRule->get_Enabled(&bEnabled))){
         res.enabled = bEnabled;
-        SysFreeString(bstrVal);
     }
     if (SUCCEEDED(FwRule->get_Grouping(&bstrVal))){
         utf8_encode(bstrVal, res.grouping);
