@@ -62,7 +62,7 @@ HRESULT getFWRules(fw_rule** rules, long* size, long* rules_count){
     ULONG cFetched = 0; 
     CComVariant var;
 
-    IUnknown *pEnumerator;
+    IUnknown *pEnumerator = NULL;
     IEnumVARIANT* pVariant = NULL;
 
     INetFwPolicy2 *pNetFwPolicy2 = NULL;
@@ -114,7 +114,6 @@ HRESULT getFWRules(fw_rule** rules, long* size, long* rules_count){
 
     int i=0;
     while(SUCCEEDED(hr) && hr != S_FALSE){
-        var.Clear();
         hr = pVariant->Next(1, &var, &cFetched);
         if (S_FALSE != hr){
             if (SUCCEEDED(hr)){
@@ -127,14 +126,28 @@ HRESULT getFWRules(fw_rule** rules, long* size, long* rules_count){
                 (*rules)[i] = DumpFWRulesInCollection(pFwRule);
                 i++;
             }
+            if(pFwRule != NULL){
+                pFwRule->Release();
+                pFwRule = NULL;
+            }
         }
     }
+    var.Clear();
 Cleanup:
     if (pFwRule != NULL){
         pFwRule->Release();
     }
+    if (pFwRules != NULL){
+        pFwRules->Release();
+    }
     if (pNetFwPolicy2 != NULL){
         pNetFwPolicy2->Release();
+    }
+    if (pVariant != NULL){
+        pVariant->Release();
+    }
+    if (pEnumerator){
+        pEnumerator->Release();
     }
     if (SUCCEEDED(hrComInit)){
         CoUninitialize();
@@ -339,46 +352,58 @@ fw_rule DumpFWRulesInCollection(INetFwRule* FwRule){
 
     if (SUCCEEDED(FwRule->get_Name(&bstrVal))){
         utf8_encode(bstrVal, res.name);
+        SysFreeString(bstrVal);
     }
     if (SUCCEEDED(FwRule->get_Description(&bstrVal))){
         utf8_encode(bstrVal, res.description);
+        SysFreeString(bstrVal);
     }
     if (SUCCEEDED(FwRule->get_ApplicationName(&bstrVal))){
         utf8_encode(bstrVal, res.app_name);
+        SysFreeString(bstrVal);
     }
     if (SUCCEEDED(FwRule->get_ServiceName(&bstrVal))){
         utf8_encode(bstrVal, res.service_name);
+        SysFreeString(bstrVal);
     }
     if (SUCCEEDED(FwRule->get_Protocol(&lVal))){
         res.protocol = lVal;
         if(lVal != NET_FW_IP_VERSION_V4 && lVal != NET_FW_IP_VERSION_V6){
             if (SUCCEEDED(FwRule->get_LocalPorts(&bstrVal))){
                 utf8_encode(bstrVal, res.local_ports);
+                SysFreeString(bstrVal);
             }
             if (SUCCEEDED(FwRule->get_RemotePorts(&bstrVal))){
                 utf8_encode(bstrVal, res.remote_ports);
+                SysFreeString(bstrVal);
             }
         }else{
             if (SUCCEEDED(FwRule->get_IcmpTypesAndCodes(&bstrVal))){
                 utf8_encode(bstrVal, res.icmp_type);
+                SysFreeString(bstrVal);
             }
         }
     }
     if (SUCCEEDED(FwRule->get_LocalAddresses(&bstrVal))){
         utf8_encode(bstrVal, res.local_adresses);
+        SysFreeString(bstrVal);
     }
     if (SUCCEEDED(FwRule->get_RemoteAddresses(&bstrVal))){
         utf8_encode(bstrVal, res.remote_addresses);
+        SysFreeString(bstrVal);
     }
     if (SUCCEEDED(FwRule->get_Profiles(&lProfileBitmask))){
         if ( lProfileBitmask & ProfileMap[0].Id){
             utf8_encode(ProfileMap[0].Name, res.profile1);
+            SysFreeString(bstrVal);
         }
         if ( lProfileBitmask & ProfileMap[1].Id){
             utf8_encode(ProfileMap[1].Name, res.profile2);
+            SysFreeString(bstrVal);
         }
         if ( lProfileBitmask & ProfileMap[2].Id){
             utf8_encode(ProfileMap[2].Name, res.profile3);
+            SysFreeString(bstrVal);
         }
     }
     if (SUCCEEDED(FwRule->get_Direction(&fwDirection))){
@@ -400,12 +425,14 @@ fw_rule DumpFWRulesInCollection(INetFwRule* FwRule){
     }
     if (SUCCEEDED(FwRule->get_InterfaceTypes(&bstrVal))){
         utf8_encode(bstrVal, res.interface_types);
+        SysFreeString(bstrVal);
     }
     if (SUCCEEDED(FwRule->get_Enabled(&bEnabled))){
         res.enabled = bEnabled;
     }
     if (SUCCEEDED(FwRule->get_Grouping(&bstrVal))){
         utf8_encode(bstrVal, res.grouping);
+        SysFreeString(bstrVal);
     }
     if (SUCCEEDED(FwRule->get_EdgeTraversal(&bEnabled))){
         res.edge_traversal = bEnabled;
