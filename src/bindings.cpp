@@ -55,7 +55,7 @@ void utf8_encode(const BSTR src, char* dst){
 }
 
 extern "C"
-HRESULT getFWRules(fw_rule** rules, long* size){
+HRESULT getFWRules(fw_rule** rules, long* size, long* rules_count){
     HRESULT hrComInit = S_OK;
     HRESULT hr = S_OK;
 
@@ -101,12 +101,11 @@ HRESULT getFWRules(fw_rule** rules, long* size){
         res = S_FALSE;
         goto Cleanup;
     }
-    *size = fwRuleCount;
-    *rules = new fw_rule[fwRuleCount];
-    if (!rules){
-        *size = fwRuleCount;
-        res = S_FALSE;
-        goto Cleanup;
+    *rules_count = fwRuleCount;
+    if (rules==NULL || *rules==NULL || fwRuleCount*sizeof(fw_rule) < *size){
+        *size = fwRuleCount*sizeof(fw_rule);
+        res = ERROR_NOT_ENOUGH_MEMORY;
+        goto Cleanup;  
     }
     pFwRules->get__NewEnum(&pEnumerator);
     if(pEnumerator){
