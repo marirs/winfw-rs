@@ -19,7 +19,7 @@ This crate can perform the following:
 Cargo.toml:
 ```toml
 [target.'cfg(windows)'.dependencies]
-winfw = "0.1.4"
+winfw = "0.1.5"
 ```
 
 main.rs:
