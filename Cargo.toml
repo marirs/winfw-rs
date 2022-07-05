@@ -9,7 +9,7 @@ build = "build.rs"
 repository = "https://github.com/marirs/winfw-rs"
 keywords = ["windows", "ffi", "win32", "com", "firewall"]
 categories = ["external-ffi-bindings", "os::windows-apis"]
-edition = "2018"
+edition = "2021"
 
 [package.metadata.docs.rs]
 default-target = "x86_64-pc-windows-msvc"
@@ -17,7 +17,7 @@ targets = ["aarch64-pc-windows-msvc", "i686-pc-windows-msvc", "x86_64-pc-windows
 
 [dependencies]
 libc = "0.2"
-serde = { version = "1.0.127", features = ["derive"] }
+serde = { version = "1", features = ["derive"] }
 
 [build-dependencies]
 cc = { version = "1.0", features = ["parallel"] }
