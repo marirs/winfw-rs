@@ -1,6 +1,6 @@
 [package]
 name = "winfw"
-version = "0.1.4"
+version = "0.1.5"
 description = "Interact with the Windows Firewall from Rust"
 authors = ["Marirs <marirs@gmail.com>"]
 license = "MIT/Apache-2.0"
