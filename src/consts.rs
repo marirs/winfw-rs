@@ -4,8 +4,8 @@
 // All files in the project carrying such notice may not be copied, modified, or distributed
 // except according to those terms.
 use libc::c_long;
-use std::fmt::{self, Display, Formatter};
 use serde::Serialize;
+use std::fmt::{self, Display, Formatter};
 
 #[derive(Clone, Serialize)]
 pub enum Protocols {
