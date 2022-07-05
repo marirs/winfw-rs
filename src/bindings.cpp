@@ -130,9 +130,11 @@ HRESULT getFWRules(fw_rule** rules, long* size, long* rules_count){
                 pFwRule->Release();
                 pFwRule = NULL;
             }
+            
+            var.Clear();
         }
     }
-    var.Clear();
+    
 Cleanup:
     if (pFwRule != NULL){
         pFwRule->Release();
