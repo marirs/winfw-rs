@@ -397,15 +397,12 @@ fw_rule DumpFWRulesInCollection(INetFwRule* FwRule){
     if (SUCCEEDED(FwRule->get_Profiles(&lProfileBitmask))){
         if ( lProfileBitmask & ProfileMap[0].Id){
             utf8_encode(ProfileMap[0].Name, res.profile1);
-            SysFreeString(bstrVal);
         }
         if ( lProfileBitmask & ProfileMap[1].Id){
             utf8_encode(ProfileMap[1].Name, res.profile2);
-            SysFreeString(bstrVal);
         }
         if ( lProfileBitmask & ProfileMap[2].Id){
             utf8_encode(ProfileMap[2].Name, res.profile3);
-            SysFreeString(bstrVal);
         }
     }
     if (SUCCEEDED(FwRule->get_Direction(&fwDirection))){
