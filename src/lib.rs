@@ -74,6 +74,7 @@ extern "C" {
     fn getFWRules(rules: &*mut fw_rule_impl, size: *mut c_long, rules_count: *mut c_long) -> c_ulong;
     fn newFWRule(rule: &fw_rule_impl) -> c_ulong;
     fn delFWRule(rule: *const c_char) -> c_ulong;
+    fn enableFWRule(rule: *const c_char, enabled: c_long) -> c_ulong;
 }
 
 #[no_mangle]
@@ -143,6 +144,28 @@ pub fn new_fw_rule(rule: &FwRule) -> Result<(), Error> {
 }
 
 #[no_mangle]
+pub fn enable_fw_rule(name: &str) -> Result<(), Error> {
+    //! Enable existing firewall rule.
+    //!
+    //! ## Example usage
+    //! ```ignore
+    //! use winfw::enable_fw_rule;
+    //!
+    //! match enable_fw_rule(&"TEST_INTERFACE_RULE".to_string()) {
+    //!     Err(_) => assert!(false),
+    //!     Ok(()) => assert!(true),
+    //! }
+    //! ```
+    let mut s: [c_char; 1024] = [0; 1024];
+    encode(name, &mut s);
+    let res = unsafe { enableFWRule(s.as_ptr(), 1) };
+    if res != 0 {
+        return Err(Error(res));
+    }
+    Ok(())
+}
+
+#[no_mangle]
 pub fn del_fw_rule(name: &str) -> Result<(), Error> {
     //! Deletes an existing firewall rule.
     //!
@@ -177,20 +200,13 @@ pub fn disable_fw_rule(name: &str) -> Result<(), Error> {
     //!     Ok(()) =>  assert!(true),
     //! }
     //! ```
-    let rules = get_fw_rules();
-    match rules {
-        Err(rules) => Err(rules),
-        Ok(rules) => {
-            for rule in rules.iter() {
-                if rule.name.eq(name) {
-                    let mut r = rule.clone();
-                    r.enabled = false;
-                    return new_fw_rule(&r);
-                }
-            }
-            Err(Error(32))
-        }
+    let mut s: [c_char; 1024] = [0; 1024];
+    encode(name, &mut s);
+    let res = unsafe { enableFWRule(s.as_ptr(), 0) };
+    if res != 0 {
+        return Err(Error(res));
     }
+    Ok(())
 }
 
 #[cfg(test)]
