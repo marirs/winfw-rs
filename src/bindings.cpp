@@ -241,7 +241,11 @@ HRESULT newFWRule(fw_rule* rule){
     pFwRule->put_Direction(NET_FW_RULE_DIRECTION(rule->direction));
     pFwRule->put_Action(NET_FW_ACTION(rule->action));
     pFwRule->put_InterfaceTypes(bstrRuleInterfaceTypes);
-    pFwRule->put_Enabled(rule->enabled);
+    if (rule->enabled){
+        pFwRule->put_Enabled(0xFFFF);
+    } else {
+        pFwRule->put_Enabled(0x0000);
+    }
     pFwRule->put_Grouping(bstrRuleGrouping);
     pFwRule->put_Profiles(CurrentProfilesBitMask);
     pFwRule->put_EdgeTraversal(rule->edge_traversal);
@@ -263,6 +267,74 @@ Cleanup:
     SysFreeString(bstrRuleInterfaces);
     SysFreeString(bstrRuleInterfaceTypes);
     SysFreeString(bstrRuleGrouping);
+    if (pFwRule != NULL){
+        pFwRule->Release();
+    }
+    if (pFwRules != NULL){
+        pFwRules->Release();
+    }
+    if (pNetFwPolicy2 != NULL){
+        pNetFwPolicy2->Release();
+    }
+    if (SUCCEEDED(hrComInit)){
+        CoUninitialize();
+    }
+    return hr;    
+}
+
+extern "C"
+HRESULT enableFWRule(char* rule_name, long enabled){
+    HRESULT hrComInit = S_OK;
+    HRESULT hr = S_OK;
+
+    INetFwPolicy2 *pNetFwPolicy2 = NULL;
+    INetFwRules *pFwRules = NULL;
+    INetFwRule *pFwRule = NULL;
+
+    long CurrentProfilesBitMask = 0;
+
+    BSTR bstrRuleName;
+    char_to_bstr(rule_name, &bstrRuleName);
+
+    hrComInit = CoInitializeEx(0, COINIT_APARTMENTTHREADED);
+    if (hrComInit != RPC_E_CHANGED_MODE){
+        if (FAILED(hrComInit)){
+            goto Cleanup;
+        }
+    }
+    hr = WFCOMInitialize(&pNetFwPolicy2);
+    if (FAILED(hr)){
+        goto Cleanup;
+    }
+    hr = pNetFwPolicy2->get_Rules(&pFwRules);
+    if (FAILED(hr)){
+        goto Cleanup;
+    }
+    hr = pNetFwPolicy2->get_CurrentProfileTypes(&CurrentProfilesBitMask);
+    if (FAILED(hr)){
+        goto Cleanup;
+    }
+    if ((CurrentProfilesBitMask & NET_FW_PROFILE2_PUBLIC) && (CurrentProfilesBitMask != NET_FW_PROFILE2_PUBLIC)){
+        CurrentProfilesBitMask ^= NET_FW_PROFILE2_PUBLIC;
+    }
+    hr = CoCreateInstance(__uuidof(NetFwRule), NULL, CLSCTX_INPROC_SERVER, __uuidof(INetFwRule), (void**)&pFwRule);
+    if (FAILED(hr)){
+        goto Cleanup;
+    }
+    hr = pFwRules->Item(bstrRuleName, &pFwRule);
+    if (FAILED(hr)){
+        goto Cleanup;
+    }
+    if(enabled){
+        hr = pFwRule->put_Enabled(0xFFFF);
+    } else {
+        hr = pFwRule->put_Enabled(0x0000);
+    }
+    if (FAILED(hr)){
+        goto Cleanup;
+    }
+Cleanup:
+    SysFreeString(bstrRuleName);
     if (pFwRule != NULL){
         pFwRule->Release();
     }
